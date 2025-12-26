@@ -2,7 +2,6 @@ import os
 import re
 import sys
 
-# Try to import ebooklib
 try:
     from ebooklib import epub
 except ImportError:
@@ -24,7 +23,6 @@ def get_chapter_sort_key(folder_name):
 def find_images_recursively(directory):
     """Walks through all subfolders to find images anywhere inside."""
     valid_images = []
-    # os.walk goes into every subfolder automatically
     for root, _, files in os.walk(directory):
         for file in files:
             if file.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
@@ -52,7 +50,7 @@ def create_deep_epub():
 
     # 3. Setup Book
     book_title = input("Enter Manga Title: ") or "Manga_Compilation"
-    # Sanitize title for a safe filename
+
     safe_title = re.sub(r'[<>:\"/\\|?*]', '_', book_title).strip()
     output_filename = f"./EPUB_Output/{safe_title}.epub"
     output_dir = os.path.dirname(output_filename)
@@ -74,12 +72,8 @@ def create_deep_epub():
     for chapter_folder in sorted_chapters:
         chapter_path = os.path.join(ROOT_DIR, chapter_folder)
         
-        # --- NEW: Recursive Search ---
-        # This finds images even if they are inside sub-sub-folders
         images_paths = find_images_recursively(chapter_path)
         
-        # Sort images by filename (Page_001, Page_002)
-        # We look at the filename part only for sorting
         images_paths.sort(key=lambda x: int(re.search(r'\d+', os.path.basename(x)).group()) if re.search(r'\d+', os.path.basename(x)) else 0)
 
         if not images_paths:
@@ -94,7 +88,6 @@ def create_deep_epub():
         for i, full_img_path in enumerate(images_paths):
             global_image_count += 1
             
-            # Read Data
             with open(full_img_path, 'rb') as f:
                 img_data = f.read()
 
@@ -139,7 +132,6 @@ def create_deep_epub():
         try:
             epub.write_epub(output_filename, book, {})
         except Exception as e:
-            # EbookLib may warn instead of raising in some versions; surface the error.
             print(f"❌ FAILED to write EPUB: {e}")
             return
         abs_out = os.path.abspath(output_filename)

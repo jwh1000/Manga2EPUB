@@ -1,7 +1,7 @@
 import os
 import base64
 import io
-from PIL import Image # Requires: pip install pillow
+from PIL import Image
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -42,11 +42,9 @@ def save_page():
                     if extension == 'jpeg': 
                         extension = 'jpg'
             except Exception:
-                # Fallback if Pillow can't read it (rare)
                 extension = 'jpg'
 
             # 4. Construct Final Filename
-            # Strip any existing extension from the browser, then add the real one
             clean_name = os.path.splitext(filename_base)[0]
             final_filename = f"{clean_name}.{extension}"
             

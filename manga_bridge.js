@@ -16,7 +16,6 @@
     const SERVER_URL = "http://127.0.0.1:5000";
     const SAVE_URL = "http://127.0.0.1:5000/save_page";
     const AUTO_START_KEY = 'manga_bridge_active';
-    // Fast mode removed: always use smart/sync behavior
     const IMAGE_REGEX = /.*storage.*/;
     const MIN_HEIGHT = 300;
 
@@ -30,15 +29,12 @@
     `;
     document.body.appendChild(container);
 
-    // Fast Mode toggle removed — the script will always perform smart syncing
-
     const btn = document.createElement('button');
     btn.innerHTML = '📡 Start Bridge';
     btn.style = "padding: 8px 12px; background: #3498db; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;";
     container.appendChild(btn);
 
     // --- LOGIC ---
-
     if (GM_getValue(AUTO_START_KEY, false)) {
         btn.innerHTML = '🛑 Stop Bridge';
         btn.style.background = '#c0392b';
@@ -80,7 +76,6 @@
     }
 
     async function startProcess() {
-        // Always use Smart Syncing (slow/robust path)
         updateStatus("⬇️ Smart Syncing...");
         window.scrollTo(0,0);
 
@@ -167,8 +162,6 @@
         });
     }
 
-    // fastScroll removed — not used anymore
-
     async function forceScroll() {
         return new Promise(resolve => {
             let lastScroll = -1;
@@ -190,7 +183,7 @@
                 data: JSON.stringify({ manga: manga, chapter: chapter, filename: filename, image_data: base64Data }),
                 onload: (r) => {
                     if (r.status === 200) resolve();
-                    else reject(new Error("Server Error " + r.status)); // Triggers the catch block
+                    else reject(new Error("Server Error " + r.status));
                 },
                 onerror: reject
             });
