@@ -16,7 +16,7 @@
     const SERVER_URL = "http://127.0.0.1:5000";
     const SAVE_URL = "http://127.0.0.1:5000/save_page";
     const AUTO_START_KEY = 'manga_bridge_active';
-    const FAST_MODE_KEY = 'manga_bridge_fast_mode';
+    // Fast mode removed: always use smart/sync behavior
     const IMAGE_REGEX = /.*storage.*/;
     const MIN_HEIGHT = 300;
 
@@ -30,25 +30,7 @@
     `;
     document.body.appendChild(container);
 
-    const toggleRow = document.createElement('div');
-    toggleRow.style = "display: flex; align-items: center; gap: 8px; font-size: 12px;";
-
-    const checkbox = document.createElement('input');
-    checkbox.type = "checkbox";
-    checkbox.id = "fastModeToggle";
-    checkbox.checked = GM_getValue(FAST_MODE_KEY, true);
-    checkbox.style = "cursor: pointer;";
-
-    const label = document.createElement('label');
-    label.htmlFor = "fastModeToggle";
-    label.innerText = "⚡ Fast Mode (Active Tab Only)";
-    label.style = "cursor: pointer; user-select: none;";
-
-    toggleRow.appendChild(checkbox);
-    toggleRow.appendChild(label);
-    container.appendChild(toggleRow);
-
-    checkbox.onchange = () => { GM_setValue(FAST_MODE_KEY, checkbox.checked); };
+    // Fast Mode toggle removed — the script will always perform smart syncing
 
     const btn = document.createElement('button');
     btn.innerHTML = '📡 Start Bridge';
@@ -98,11 +80,9 @@
     }
 
     async function startProcess() {
-        const isFast = GM_getValue(FAST_MODE_KEY, true);
-        updateStatus(isFast ? "⬇️ Fast Scrolling..." : "⬇️ Smart Syncing...");
-
-        if (isFast) await fastScroll();
-        else window.scrollTo(0,0);
+        // Always use Smart Syncing (slow/robust path)
+        updateStatus("⬇️ Smart Syncing...");
+        window.scrollTo(0,0);
 
         const images = Array.from(document.querySelectorAll('img')).filter(img =>
             (img.src && IMAGE_REGEX.test(img.src)) ||
@@ -187,18 +167,7 @@
         });
     }
 
-    async function fastScroll() {
-        return new Promise(resolve => {
-            let lastScroll = -1;
-            const timer = setInterval(() => {
-                window.scrollBy(0, 600);
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
-                    if (window.scrollY === lastScroll) { clearInterval(timer); resolve(); }
-                }
-                lastScroll = window.scrollY;
-            }, 50);
-        });
-    }
+    // fastScroll removed — not used anymore
 
     async function forceScroll() {
         return new Promise(resolve => {
